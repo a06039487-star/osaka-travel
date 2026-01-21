@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本自由行 AI 助理</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f0f2f5; }
+header { background:#FF6F61; color:#fff; padding:15px; text-align:center; font-size:20px; font-weight:bold; }
+.card { background:#fff; margin:10px; padding:15px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+input, select, button { width:100%; padding:10px; margin:5px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+button { background:#FF6F61; color:#fff; border:none; font-size:16px; cursor:pointer; }
+button:hover { background:#E85C50; }
+.day-plan { border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:10px; background:#ffe8e0; position: relative; cursor:grab; }
+.delete-btn { position:absolute; top:5px; right:5px; color:red; font-weight:bold; cursor:pointer; }
+</style>
+</head>
+<body>
+<header>日本自由行 AI 助理</header>
+<div class="card">
+<label>國家/地區（可多個）:</label>
+<input type="text" id="multiPlaces" placeholder="東京,北海道,九州">
+<label>日期範圍 (YYYY-MM-DD ~ YYYY-MM-DD):</label>
+<input type="text" id="dateRange" placeholder="2026-01-25 ~ 2026-01-30">
+<label>起始地點:</label>
+<input type="text" id="startLoc" placeholder="輸入起始地點或使用定位">
+<label>住宿預算（每人每晚）:</label>
+<input type="number" id="budget" placeholder="5000">
+<h4>喜好類型（可多選）:</h4>
+<label><input type="checkbox" class="preference" value="觀光景點">觀光景點</label>
+<label><input type="checkbox" class="preference" value="美食推薦">美食推薦</label>
+<button id="generateBtn">生成行程</button>
+</div>
+<div class="card">
+<h3>每日行程安排</h3>
+<div id="itinerary"></div>
+</div>
+<div class="card">
+<h3>Top5熱門行程</h3>
+<div id="top5"></div>
+</div>
+<script>
+document.getElementById('generateBtn').onclick=function(){
+  const multiPlaces=document.getElementById('multiPlaces').value.split(',').map(s=>s.trim()).filter(s=>s);
+  const dateRange=document.getElementById('dateRange').value.split('~').map(s=>s.trim());
+  const startLoc=document.getElementById('startLoc').value||"起點";
+  const budget=document.getElementById('budget').value||5000;
+  const prefs=Array.from(document.querySelectorAll('.preference:checked')).map(c=>c.value);
+  const days=Math.max(Math.ceil((new Date(dateRange[1])-new Date(dateRange[0]))/(1000*60*60*24))+1,1);
+  const itineraryDiv=document.getElementById('itinerary'); itineraryDiv.innerHTML='';
+  const top5Div=document.getElementById('top5'); top5Div.innerHTML='';
+  const samplePlaces=["大阪城","清水寺","富士山","淺草寺","心齋橋"];
+  for(let d=1;d<=days;d++){
+    const dayDiv=document.createElement('div'); dayDiv.className='day-plan';
+    dayDiv.innerHTML=`<strong>第 ${d} 天 起點:${d===1?startLoc:"前一景點"}</strong>`;
+    samplePlaces.forEach(p=>{const pDiv=document.createElement('div'); pDiv.innerHTML=`景點: ${p} <a href="https://www.klook.com/zh-TW/search/?query=${encodeURIComponent(p)}" target="_blank">購票</a>`; dayDiv.appendChild(pDiv);});
+    itineraryDiv.appendChild(dayDiv);
+  }
+  top5Div.innerHTML="Top5: "+samplePlaces.slice(0,5).join(", ");
+};
+</script>
+</body>
+</html>

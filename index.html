@@ -1,281 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Smart Trip Planner</title>
-  <meta name="description" content="Generate a complete travel itinerary in under 60 seconds using AI. Mobile-first, simple, and automated." />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Smart Trip Planner</title>
 
-  <style>
-    :root {
-      --bg: #f7f8fa;
-      --card: #ffffff;
-      --primary: #2563eb;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --radius: 14px;
-    }
+<link rel="manifest" href="manifest.json">
 
-    * {
-      box-sizing: border-box;
-    }
+<style>
+:root {
+  --primary:#2563eb;
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#111827;
+  --muted:#6b7280;
+  --radius:16px;
+}
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:var(--bg);
+  color:var(--text);
+}
 
-    header {
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: #fff;
-      padding: 48px 20px;
-      text-align: center;
-    }
+header {
+  padding:20px;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  color:#fff;
+  text-align:center;
+}
 
-    header h1 {
-      margin: 0 0 12px;
-      font-size: 2.2rem;
-    }
+main {
+  max-width:520px;
+  margin:auto;
+  padding:16px;
+}
 
-    header p {
-      max-width: 600px;
-      margin: 0 auto;
-      opacity: 0.95;
-    }
+.card {
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:16px;
+}
 
-    main {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 24px 16px 80px;
-    }
+label {
+  font-size:.8rem;
+  color:var(--muted);
+}
 
-    section {
-      margin-top: 32px;
-    }
+input,select {
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  border-radius:12px;
+  border:1px solid #e5e7eb;
+  font-size:1rem;
+}
 
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 24px;
-      border: 1px solid var(--border);
-    }
+button {
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:var(--primary);
+  color:#fff;
+  font-size:1rem;
+}
 
-    h2 {
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
+.result {
+  animation:fade .4s ease;
+}
 
-    h3 {
-      margin-bottom: 8px;
-      margin-top: 24px;
-      font-size: 1.15rem;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 6px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-
-    .badge {
-      display: inline-block;
-      background: #eef2ff;
-      color: #3730a3;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      margin-right: 6px;
-      margin-bottom: 6px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 32px 16px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-  </style>
+@keyframes fade {
+  from {opacity:0;transform:translateY(10px);}
+  to {opacity:1;transform:translateY(0);}
+}
+</style>
 </head>
 
 <body>
 
 <header>
   <h1>✈️ AI Smart Trip Planner</h1>
-  <p>
-    Generate a complete, ready-to-use travel itinerary in under 60 seconds.
-    No research. No stress. Just travel.
-  </p>
+  <p style="font-size:.8rem;">Create a full trip in under 60 seconds</p>
 </header>
 
 <main>
 
-  <section class="card">
-    <h2>📌 Product Overview</h2>
-    <p>
-      AI Smart Trip Planner is a mobile-first AI travel planning app designed
-      for users who don’t want to manually research or organize trips.
-    </p>
-    <p>
-      By answering a few simple questions, users receive a full itinerary
-      including attractions, transportation, and accommodation suggestions.
-    </p>
-  </section>
+<div class="card">
+  <label>Destination</label>
+  <input id="dest" placeholder="Tokyo, Kyoto, Osaka">
 
-  <section class="card">
-    <h2>🎯 Core User Value</h2>
-    <blockquote>
-      “I don’t want to plan. I just want a good trip.”
-    </blockquote>
-    <ul>
-      <li>Trip generation in under 60 seconds</li>
-      <li>No travel expertise required</li>
-      <li>Automatically optimized routes & schedules</li>
-      <li>Output feels complete, not a draft</li>
-    </ul>
-  </section>
+  <label>Start Date</label>
+  <input type="date" id="start">
 
-  <section class="card">
-    <h2>📱 Platforms</h2>
-    <ul>
-      <li>Progressive Web App (PWA-first)</li>
-      <li>Mobile-first, iOS-style layout</li>
-      <li>Installable to home screen</li>
-      <li>Desktop responsive (secondary priority)</li>
-    </ul>
-  </section>
+  <label>End Date</label>
+  <input type="date" id="end">
 
-  <section class="card">
-    <h2>🧭 Primary User Flow</h2>
-    <ol>
-      <li>Open the app</li>
-      <li>Select destination(s)</li>
-      <li>Select travel dates</li>
-      <li>Choose starting location</li>
-      <li>Set accommodation budget</li>
-      <li>Select travel preferences</li>
-      <li>Tap <strong>Create My Trip</strong></li>
-      <li>Receive full itinerary & alternatives</li>
-    </ol>
-  </section>
+  <label>Budget (per person / night)</label>
+  <input type="number" id="budget" placeholder="120">
 
-  <section class="card">
-    <h2>🧩 User Inputs</h2>
+  <label>Travel Style</label>
+  <select id="style">
+    <option>Sightseeing</option>
+    <option>Food & Dining</option>
+    <option>Nature</option>
+    <option>Family</option>
+    <option>Relaxation</option>
+  </select>
 
-    <h3>Destinations</h3>
-    <p>Single city, multiple cities, or regions. Route order is auto-optimized.</p>
+  <button onclick="generate()">Generate My Trip</button>
+</div>
 
-    <h3>Dates</h3>
-    <p>Single date-range picker with automatic duration calculation.</p>
-
-    <h3>Starting Location</h3>
-    <p>GPS-based or manual input for transport planning.</p>
-
-    <h3>Accommodation Budget</h3>
-    <p>Numeric input (per person per night).</p>
-
-    <h3>Travel Preferences</h3>
-    <div>
-      <span class="badge">Sightseeing</span>
-      <span class="badge">Nature</span>
-      <span class="badge">Family</span>
-      <span class="badge">Outdoor</span>
-      <span class="badge">Food</span>
-      <span class="badge">Shopping</span>
-      <span class="badge">Relaxation</span>
-      <span class="badge">Theme Parks</span>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>🤖 AI Planning Logic</h2>
-
-    <h3>Daily Itinerary</h3>
-    <ul>
-      <li>Optimized attraction order</li>
-      <li>Grouped by proximity</li>
-      <li>Balanced activity intensity</li>
-      <li>Includes transport time & ticket links</li>
-    </ul>
-
-    <h3>Transportation</h3>
-    <ul>
-      <li>Fastest route</li>
-      <li>Cheapest route</li>
-      <li>Fewest transfers</li>
-      <li>Direct route (if available)</li>
-    </ul>
-
-    <h3>Accommodation</h3>
-    <p>
-      Suggestions based on budget, location, and itinerary convenience,
-      including external booking links.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>⭐ Top 5 Popular Trips</h2>
-    <p>
-      The system also generates five alternative itineraries based on
-      destination popularity and user interests.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>🎨 UI / UX Principles</h2>
-    <ul>
-      <li>Mobile-first card layout</li>
-      <li>Large touch targets</li>
-      <li>Bottom-sheet interactions</li>
-      <li>Minimal text input</li>
-      <li>Clear primary actions</li>
-    </ul>
-  </section>
-
-  <section class="card">
-    <h2>🌐 Localization</h2>
-    <ul>
-      <li>Traditional Chinese</li>
-      <li>English</li>
-      <li>Japanese</li>
-    </ul>
-  </section>
-
-  <section class="card">
-    <h2>💰 Monetization (Future)</h2>
-    <ul>
-      <li>Affiliate ticket links</li>
-      <li>Hotel booking commissions</li>
-      <li>Premium subscription</li>
-      <li>Sponsored locations</li>
-    </ul>
-  </section>
-
-  <section class="card">
-    <h2>🎨 Design Reference</h2>
-    <p>
-      Inspired by Wanderlog for flow clarity and mobile usability.
-      UI, wording, and structure are fully original.
-    </p>
-  </section>
+<div id="output"></div>
 
 </main>
 
-<footer>
-  © 2026 AI Smart Trip Planner — Developer Specification Demo
-</footer>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+
+/* ===== AI GENERATION (Mock now, real API later) ===== */
+
+async function generate() {
+  const dest = destEl.value;
+  const style = styleEl.value;
+  const budget = budgetEl.value;
+
+  output.innerHTML = `
+  <div class="card result">
+    <h3>${dest}</h3>
+    <p><strong>Style:</strong> ${style}</p>
+
+    <h4>Day 1</h4>
+    <ul>
+      <li>Arrival & city highlights</li>
+      <li>Local food experience</li>
+    </ul>
+
+    <h4>Day 2</h4>
+    <ul>
+      <li>Cultural or nature attraction</li>
+      <li>Evening local walk</li>
+    </ul>
+
+    <h4>Transportation</h4>
+    <ul>
+      <li>Fastest: Express / Metro</li>
+      <li>Cheapest: Local transit</li>
+      <li>Direct: Taxi / Bus</li>
+    </ul>
+
+    <h4>Accommodation</h4>
+    <p>Recommended budget: <strong>$${budget}</strong> / night</p>
+
+    <h4>Top Alternatives</h4>
+    <p>Food Lover · Relaxing · Family · Hidden Gems · Highlights</p>
+  </div>`;
+}
+
+/* === REAL OpenAI API (用在 serverless) ===
+
+POST /api/generate
+{
+  destination, dates, budget, style
+}
+
+const completion = await openai.chat.completions.create({
+  model: "gpt-4.1-mini",
+  messages: [
+    { role: "system", content: "You are a travel planner..." },
+    { role: "user", content: prompt }
+  ]
+});
+
+*/
+</script>
 
 </body>
 </html>

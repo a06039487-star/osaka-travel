@@ -3,14 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Travel Planner</title>
 
-<title>AI Smart Trip Planner</title>
-
-<!-- iOS App 必備 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
 :root {
@@ -19,147 +17,167 @@
   --card:#fff;
   --text:#111827;
   --muted:#6b7280;
-  --radius:16px;
+  --radius:14px;
 }
-
 body {
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
   background:var(--bg);
   color:var(--text);
 }
-
 header {
-  padding:20px;
-  background:linear-gradient(135deg,#2563eb,#1e40af);
+  background:var(--primary);
   color:#fff;
+  padding:16px;
   text-align:center;
 }
-
 main {
-  max-width:520px;
+  max-width:720px;
   margin:auto;
   padding:16px;
 }
-
 .card {
   background:var(--card);
   border-radius:var(--radius);
   padding:16px;
   margin-bottom:16px;
 }
-
-label {
-  font-size:.8rem;
-  color:var(--muted);
-}
-
-input,select {
+input, select, textarea {
   width:100%;
   padding:12px;
   margin:6px 0 12px;
-  border-radius:12px;
+  border-radius:10px;
   border:1px solid #e5e7eb;
-  font-size:1rem;
 }
-
 button {
   width:100%;
   padding:14px;
   border:none;
-  border-radius:14px;
+  border-radius:12px;
   background:var(--primary);
   color:#fff;
-  font-size:1rem;
 }
-
-.result {
-  animation:fade .3s ease;
+.lang {
+  display:flex;
+  gap:8px;
+  justify-content:center;
 }
-
-@keyframes fade {
-  from {opacity:0;transform:translateY(10px);}
-  to {opacity:1;transform:translateY(0);}
+.lang button {
+  width:auto;
+  padding:6px 10px;
+  background:#1e40af;
 }
+#map { height:300px; border-radius:12px; }
+.place { font-size:.9rem; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>✈️ AI Smart Trip Planner</h1>
-  <p style="font-size:.8rem;">Plan a full trip in under 60 seconds</p>
+  <h1 id="title">Smart Travel Planner</h1>
+  <p id="subtitle">Plan trips, maps, routes & ideas in one place</p>
+  <div class="lang">
+    <button onclick="setLang('en')">EN</button>
+    <button onclick="setLang('zh')">中</button>
+    <button onclick="setLang('ja')">日</button>
+  </div>
 </header>
 
 <main>
 
 <div class="card">
-  <label>Destination</label>
-  <input id="dest" placeholder="Osaka, Kyoto">
-
-  <label>Start Date</label>
+  <h2 id="createTrip">Create Trip</h2>
+  <input id="tripName" placeholder="Trip name">
+  <input id="destination" placeholder="Osaka, Kyoto">
   <input type="date" id="start">
-
-  <label>End Date</label>
   <input type="date" id="end">
-
-  <label>Budget (per night)</label>
-  <input type="number" id="budget" placeholder="120">
-
-  <label>Travel Style</label>
-  <select id="style">
-    <option>Sightseeing</option>
-    <option>Food & Dining</option>
-    <option>Nature</option>
-    <option>Family</option>
-    <option>Relaxation</option>
-  </select>
-
-  <button onclick="generateTrip()">Generate My Trip</button>
+  <button onclick="generateTrip()">Generate AI Trip</button>
 </div>
 
-<div id="output"></div>
+<div class="card">
+  <h2>Places</h2>
+  <input id="placeInput" placeholder="Add place (e.g. Osaka Castle)">
+  <button onclick="addPlace()">Add Place</button>
+  <div id="places"></div>
+</div>
+
+<div class="card">
+  <h2>Map</h2>
+  <div id="map"></div>
+</div>
+
+<div class="card">
+  <h2>Share / Export</h2>
+  <button onclick="exportTrip()">Export Trip (JSON)</button>
+  <button onclick="copyTrip()">Copy Trip Summary</button>
+</div>
 
 </main>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+/* ===== 多語系 ===== */
+const i18n = {
+  en:{title:"Smart Travel Planner",subtitle:"Plan trips, maps, routes & ideas in one place",create:"Create Trip"},
+  zh:{title:"智慧旅遊規劃",subtitle:"一次完成行程、地圖與路線",create:"建立行程"},
+  ja:{title:"スマート旅行プランナー",subtitle:"旅程・地図・ルートを一括管理",create:"旅行を作成"}
+};
+function setLang(l){
+  title.innerText=i18n[l].title;
+  subtitle.innerText=i18n[l].subtitle;
+  createTrip.innerText=i18n[l].create;
 }
 
-function generateTrip() {
-  const dest = document.getElementById("dest").value;
-  const budget = document.getElementById("budget").value;
-  const style = document.getElementById("style").value;
+/* ===== 地圖 ===== */
+const map = L.map('map').setView([34.6937,135.5023], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-  document.getElementById("output").innerHTML = `
-  <div class="card result">
-    <h3>${dest}</h3>
-    <p><strong>Style:</strong> ${style}</p>
+/* ===== Trip Data ===== */
+let trip={ places:[] };
 
-    <h4>Day 1</h4>
-    <ul>
-      <li>City highlights & landmarks</li>
-      <li>Local food experience</li>
-    </ul>
-
-    <h4>Day 2</h4>
-    <ul>
-      <li>Cultural or nature spot</li>
-      <li>Evening walk & dinner</li>
-    </ul>
-
-    <h4>Transportation</h4>
-    <ul>
-      <li>Fastest: Express / Metro</li>
-      <li>Cheapest: Local transit</li>
-      <li>Direct: Taxi / Bus</li>
-    </ul>
-
-    <h4>Accommodation</h4>
-    <p>Estimated budget: <strong>$${budget}</strong> / night</p>
-  </div>`;
+/* ===== AI 行程（Mock，真 AI 放 serverless） ===== */
+function generateTrip(){
+  trip.name=tripName.value;
+  trip.dest=destination.value;
+  trip.days=[
+    "Arrival & city highlights",
+    "Cultural sites & local food",
+    "Shopping & free exploration"
+  ];
+  alert("AI itinerary generated (mock)");
 }
+
+/* ===== Places & Route ===== */
+function addPlace(){
+  const p=placeInput.value;
+  if(!p) return;
+  trip.places.push(p);
+  document.getElementById("places").innerHTML+=
+    `<div class="place">📍 ${p}</div>`;
+  placeInput.value="";
+}
+
+/* ===== Share / Export ===== */
+function exportTrip(){
+  const data=JSON.stringify(trip,null,2);
+  const blob=new Blob([data],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="trip.json";
+  a.click();
+}
+function copyTrip(){
+  navigator.clipboard.writeText(JSON.stringify(trip));
+  alert("Trip copied");
+}
+
+/*
+=== 真 OpenAI API（請放在 Cloudflare Worker / Vercel）===
+POST /api/generate
+model: gpt-4.1-mini
+*/
 </script>
 
 </body>

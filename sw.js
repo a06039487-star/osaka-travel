@@ -1,8 +1,8 @@
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open("trip-planner").then(cache => {
-      return cache.addAll(["/", "/index.html"]);
-    })
+    caches.open("trip-planner").then(cache =>
+      cache.addAll(["./", "./index.html"])
+    )
   );
 });
 

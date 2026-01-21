@@ -1,7 +1,7 @@
 {
   "name": "AI Smart Trip Planner",
   "short_name": "Trip Planner",
-  "start_url": "/",
+  "start_url": "/osaka-travel/",
   "display": "standalone",
   "background_color": "#2563eb",
   "theme_color": "#2563eb",

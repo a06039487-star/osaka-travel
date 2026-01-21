@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>AI Smart Trip Planner</title>
+
+<!-- iOS App 必備 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <link rel="manifest" href="manifest.json">
 
@@ -69,7 +74,7 @@ button {
 }
 
 .result {
-  animation:fade .4s ease;
+  animation:fade .3s ease;
 }
 
 @keyframes fade {
@@ -83,14 +88,14 @@ button {
 
 <header>
   <h1>✈️ AI Smart Trip Planner</h1>
-  <p style="font-size:.8rem;">Create a full trip in under 60 seconds</p>
+  <p style="font-size:.8rem;">Plan a full trip in under 60 seconds</p>
 </header>
 
 <main>
 
 <div class="card">
   <label>Destination</label>
-  <input id="dest" placeholder="Tokyo, Kyoto, Osaka">
+  <input id="dest" placeholder="Osaka, Kyoto">
 
   <label>Start Date</label>
   <input type="date" id="start">
@@ -98,7 +103,7 @@ button {
   <label>End Date</label>
   <input type="date" id="end">
 
-  <label>Budget (per person / night)</label>
+  <label>Budget (per night)</label>
   <input type="number" id="budget" placeholder="120">
 
   <label>Travel Style</label>
@@ -110,7 +115,7 @@ button {
     <option>Relaxation</option>
   </select>
 
-  <button onclick="generate()">Generate My Trip</button>
+  <button onclick="generateTrip()">Generate My Trip</button>
 </div>
 
 <div id="output"></div>
@@ -122,28 +127,26 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 
-/* ===== AI GENERATION (Mock now, real API later) ===== */
+function generateTrip() {
+  const dest = document.getElementById("dest").value;
+  const budget = document.getElementById("budget").value;
+  const style = document.getElementById("style").value;
 
-async function generate() {
-  const dest = destEl.value;
-  const style = styleEl.value;
-  const budget = budgetEl.value;
-
-  output.innerHTML = `
+  document.getElementById("output").innerHTML = `
   <div class="card result">
     <h3>${dest}</h3>
     <p><strong>Style:</strong> ${style}</p>
 
     <h4>Day 1</h4>
     <ul>
-      <li>Arrival & city highlights</li>
+      <li>City highlights & landmarks</li>
       <li>Local food experience</li>
     </ul>
 
     <h4>Day 2</h4>
     <ul>
-      <li>Cultural or nature attraction</li>
-      <li>Evening local walk</li>
+      <li>Cultural or nature spot</li>
+      <li>Evening walk & dinner</li>
     </ul>
 
     <h4>Transportation</h4>
@@ -154,29 +157,9 @@ async function generate() {
     </ul>
 
     <h4>Accommodation</h4>
-    <p>Recommended budget: <strong>$${budget}</strong> / night</p>
-
-    <h4>Top Alternatives</h4>
-    <p>Food Lover · Relaxing · Family · Hidden Gems · Highlights</p>
+    <p>Estimated budget: <strong>$${budget}</strong> / night</p>
   </div>`;
 }
-
-/* === REAL OpenAI API (用在 serverless) ===
-
-POST /api/generate
-{
-  destination, dates, budget, style
-}
-
-const completion = await openai.chat.completions.create({
-  model: "gpt-4.1-mini",
-  messages: [
-    { role: "system", content: "You are a travel planner..." },
-    { role: "user", content: prompt }
-  ]
-});
-
-*/
 </script>
 
 </body>
